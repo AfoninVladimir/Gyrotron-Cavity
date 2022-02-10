@@ -704,7 +704,7 @@ class Ui_MainWindow(object):
         plt.show()
 
     # перевод в систему СИ
-    def transfer_to_the_SI_system(self, list_input):
+    def transfer_to_SI_system(self, list_input):
         list_out = []
         mm = 10 ** (-3)
         cm = 10 ** (-2)
@@ -799,7 +799,7 @@ class Ui_MainWindow(object):
             dz = self.dz_lineEdit.text()
 
             list_input = [R0, L, z_left, z_right, z_start, z_finish, dz]
-            list_output = self.transfer_to_the_SI_system(list_input)
+            list_output = self.transfer_to_SI_system(list_input)
 
             R0 = float(list_output[0])
             L = float(list_output[1])
@@ -905,7 +905,7 @@ class Ui_MainWindow(object):
         except:
             pass
 
-    # открывает файл со значениями, вставляет в поля ввода
+    # открывает файл со значениями и вставляет в поля ввода
     def open(self):
         try:
             fname = QFileDialog.getOpenFileName()
