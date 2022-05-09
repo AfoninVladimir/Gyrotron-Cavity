@@ -1,10 +1,10 @@
-#######################################################################################################################
+########################################################################################################################
 ##
 ## BY: AFONIN VLADIMIR ALEKSEEVICH
 ##
 ## PROJECT: GYROTRON CAVITY GUI
 ##
-## V: 0.5.0e
+## V: 0.6.0
 ##
 ########################################################################################################################
 # -*- coding: utf-8 -*-
@@ -14,22 +14,12 @@
 ########################################################################################################################
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QFileDialog
-from PyQt5 import *
-import matplotlib.pyplot as plt
-from numpy import array  # массив
-from numpy import arange  # как range, но с шагом типа float
-from numpy import pi
-from numpy import sin, cos, tan, arcsin, arccos, arctan, sinh, cosh, tanh, arcsinh, arccosh, arctanh
-from numpy import degrees  # Преобразует радианную меру угла в градусную.
-from numpy import radians  # Преобразует градусную меру угла в радианную.
-import numpy as np
-from scipy import special
-import sys
+from import_all import *
+from auxiliary_functions import *
 
-# глобальная переменная
+# глобальные переменные
 Ri = np.array([0.0])
+v = []
 
 
 class Ui_MainWindow(object):
@@ -185,7 +175,7 @@ class Ui_MainWindow(object):
                                        "    border: none;     \n"
                                        " }")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("icons/Document-Add-02-512.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap('icons/Document-Add-02-512.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Open_Button.setIcon(icon1)
         self.Open_Button.setIconSize(QtCore.QSize(40, 40))
         self.Open_Button.setFlat(True)
@@ -661,9 +651,9 @@ class Ui_MainWindow(object):
         self.Omega_label.setText(_translate("MainWindow", "Omega"))
         self.z_right_label.setText(_translate("MainWindow", "z right"))
         self.Named.setText(_translate("MainWindow", "СГУ"))
-        self.Number_Version.setText(_translate("MainWindow", "v0.5.0e"))
+        self.Number_Version.setText(_translate("MainWindow", "v0.6.0"))
 
-    # обработка нажтий на кнопкт
+    # обработка нажатий на кнопки
     def button_click_processing(self):
         # выполнение функции "Run" по нажатию кнопки "Запуск"
         self.Run_Button.clicked.connect(self.run)
@@ -694,74 +684,14 @@ class Ui_MainWindow(object):
         # plt.xlabel('z, мм', fontsize=18, fontweight="bold")
         # plt.ylabel('R(z), мм', fontsize=18, fontweight="bold")
         # plt.tick_params(axis='both', which='major', labelsize=20)
-        plt.figure(figsize=(12, 6.75))
-        plt.xlabel('z, м')
-        plt.ylabel('R(z), м')
+        plt.figure(figsize = (12, 6.75))
+        plt.xlabel('z, мм')
+        plt.ylabel('R(z), мм')
         plt.grid(True)
-        plt.plot(zi, Rzt, "b")
-        plt.plot(zi, -Rzt, "b")
-        plt.subplots_adjust(top=0.978, bottom=0.086, left=0.054, right=0.987, hspace=0.2, wspace=0.2)
+        plt.plot(zi * 1000, Rzt * 1000, "b")
+        plt.plot(zi * 1000, -Rzt * 1000, "b")
+        plt.subplots_adjust(top = 0.98, bottom = 0.08, left = 0.08, right = 0.98, hspace = 0.2, wspace = 0.2)
         plt.show()
-
-    # перевод в систему СИ
-    def transfer_to_SI_system(self, list_input):
-        list_out = []
-        mm = 10 ** (-3)
-        cm = 10 ** (-2)
-        for i in list_input:
-            if " mm" in i:
-                list_out.append(float(i.replace(' mm', '')) * mm)
-            elif "mm" in i:
-                list_out.append(float(i.replace('mm', '')) * mm)
-            elif " cm" in i:
-                list_out.append(float(i.replace(' cm', '')) * cm)
-            elif "cm" in i:
-                list_out.append(float(i.replace('cm', '')) * cm)
-            else:
-                list_out.append(i)
-        return list_out
-
-    # заменяет "e" на "E"
-    def scientific_notation(self, number):
-        """
-    Format a floating-point scalar as a decimal string in scientific notation.
-
-    Provides control over rounding, trimming and padding. Uses and assumes
-    IEEE unbiased rounding. Uses the "Dragon4" algorithm.
-
-    Parameters
-    ----------
-    x : python float or numpy floating scalar
-        Value to format.
-    precision : non-negative integer or None, optional
-        Maximum number of digits to print. May be None if `unique` is
-        `True`, but must be an integer if unique is `False`.
-    unique : boolean, optional
-        If `True`, use a digit-generation strategy which gives the shortest
-        representation which uniquely identifies the floating-point number from
-        other values of the same type, by judicious rounding. If `precision`
-        was omitted, print all necessary digits, otherwise digit generation is
-        cut off after `precision` digits and the remaining value is rounded.
-        If `False`, digits are generated as if printing an infinite-precision
-        value and stopping after `precision` digits, rounding the remaining
-        value.
-    trim : one of 'k', '.', '0', '-', optional
-        Controls post-processing trimming of trailing digits, as follows:
-
-        * 'k' : keep trailing zeros, keep decimal point (no trimming)
-        * '.' : trim all trailing zeros, leave decimal point
-        * '0' : trim all but the zero before the decimal point. Insert the
-          zero if it is missing.
-        * '-' : trim trailing zeros and any trailing decimal point
-    sign : boolean, optional
-        Whether to show the sign for positive values.
-    pad_left : non-negative integer, optional
-        Pad the left side of the string with whitespace until at least that
-        many characters are to the left of the decimal point.
-    exp_digits : non-negative integer, optional
-        Pad the exponent with zeros until it contains at least this many digits.
-        If omitted, the exponent will be at least 2 digits."""
-        return str(np.format_float_scientific(number, trim='-', exp_digits=True)).replace("e", "E")
 
     # присваивание значений переменым и посторение графика
     def run(self):
@@ -788,7 +718,7 @@ class Ui_MainWindow(object):
             m = int(self.m_lineEdit.text())
             nMods = int(self.Nmods_lineEdit.text())
             sigma = float(self.Sigma_lineEdit.text())
-            OmegaL2divR2 = float(self.Omega_lineEdit.text())
+            OmegaL2divR2 = complex(self.Omega_lineEdit.text())
 
             R0 = self.R0_lineEdit.text()
             L = self.L_lineEdit.text()
@@ -799,7 +729,7 @@ class Ui_MainWindow(object):
             dz = self.dz_lineEdit.text()
 
             list_input = [R0, L, z_left, z_right, z_start, z_finish, dz]
-            list_output = self.transfer_to_SI_system(list_input)
+            list_output = Auxiliary_Functions.transfer_to_the_SI_system(Auxiliary_Functions, list_input)
 
             R0 = float(list_output[0])
             L = float(list_output[1])
@@ -829,42 +759,77 @@ class Ui_MainWindow(object):
             z1 = z_start
             zN = z_finish
             NN = round((zN - z1) / dz)
-            zi = arange(z1, zN + dz, dz)
+            zi = arange(z1, zN, dz)
             zi = zi[:-1]
             ksii = zi / znorm
             Delksi = dz / znorm
 
             """Сдвиг"""
-            # Omega0 = (numn * dz / L) ** 2 * OmegaL2divR20
+            # Omega0 = (numn * dz / L) ** 2 * OmegaL2divR2
             # Shift0 = (numn * dz / L) ** 2 * Shift
 
             """Rz"""
             self.Rz(zi, RZ)
 
-            file = open("gyrotron_cavity.dat", "w")
-            file.write("n" + " " * 15 + str(n) + "\n")
+            """|"""
+            Tolerance = 0.1e-07
+            Shift = 0
+            ShiftFraction = 0.5
+            Eigenfunc = 1
+            LinApprox = 1
+            CondNumber = 0
+
+            file = open("DataForFortran.dat", "w")
             file.write("m" + " " * 15 + str(m) + "\n")
-            file.write("L" + " " * 15 + str(self.scientific_notation(L)) + "\n")
+            file.write("nr" + " " * 14 + str(n) + "\n")
+            file.write("L" + " " * 15 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, L)) + "\n")
             file.write("nMods" + " " * 11 + str(nMods) + "\n")
-            file.write("R0" + " " * 14 + str(self.scientific_notation(R0)) + "\n")
-            file.write("sigma" + " " * 11 + str(self.scientific_notation(sigma)) + "\n")
-            file.write("OmegaL2divR2" + " " * 4 + str(self.scientific_notation(OmegaL2divR2)) + "\n")
-            file.write("z_left" + " " * 10 + str(self.scientific_notation(z_left)) + "\n")
-            file.write("z_right" + " " * 9 + str(self.scientific_notation(z_right)) + "\n")
-            file.write("z_start" + " " * 9 + str(self.scientific_notation(z_start)) + "\n")
-            file.write("z_finish" + " " * 8 + str(self.scientific_notation(z_finish)) + "\n")
-            file.write("dz" + " " * 14 + str(self.scientific_notation(dz)) + "\n")
+            file.write("R0" + " " * 14 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, R0)) + "\n")
+            file.write(
+                "sigma" + " " * 11 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, sigma)) + "\n")
+            file.write("OmegaL2divR20re" + " " * 1 + str(
+                Auxiliary_Functions.scientific_notation(Auxiliary_Functions, OmegaL2divR2.real)) + "\n")
+            file.write("OmegaL2divR20im" + " " * 1 + str(
+                Auxiliary_Functions.scientific_notation(Auxiliary_Functions, OmegaL2divR2.imag)) + "\n")
+            file.write(
+                "zleft" + " " * 11 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_left)) + "\n")
+            file.write(
+                "zright" + " " * 10 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_right)) + "\n")
+            file.write(
+                "zstart" + " " * 10 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_start)) + "\n")
+            file.write(
+                "zfin" + " " * 12 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_finish)) + "\n")
+            file.write("dz" + " " * 14 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, dz)) + "\n")
+            file.write("Tolerance" + " " * 7 + str(
+                Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Tolerance)) + "\n")
+            file.write(
+                "Shift" + " " * 11 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Shift)) + "\n")
+            file.write("ShiftFraction" + " " * 3 + str(
+                Auxiliary_Functions.scientific_notation(Auxiliary_Functions, ShiftFraction)) + "\n")
+            file.write("Eigenfunc" + " " * 7 + str(Eigenfunc) + "\n")
+            file.write("LinApprox" + " " * 7 + str(LinApprox) + "\n")
+            file.write("CondNumber" + " " * 6 + str(CondNumber) + "\n")
             file.write("NN" + " " * 14 + str(NN) + "\n")
             file.write("Ri" + " " * 12)
-            for i in range(0, len(Ri), 5):
+
+            for i in range(0, len(Ri) - 5, 5):
                 for j in range(5):
-                    file.write("  " + str(self.scientific_notation(Ri[i + j])))
+                    file.write("  " + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Ri[i + j])))
                 file.write("\n")
                 file.write(" " * 14)
 
-            # file.write(str(Omega0))
-            # file.write(str(Shift0))
+            if len(Ri) % 5 != 0:
+                for i in range(len(Ri) % 5, 0, -1):
+                    file.write("  " + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Ri[-i])))
+
             file.close()
+
+            zik = []
+            for i in range(len(zi)):
+                zik.append(float(zi[i]))
+
+            for i in range(nMods):
+                plot_mods(i, zik)
 
         except:
             error = QMessageBox()
@@ -905,7 +870,7 @@ class Ui_MainWindow(object):
         except:
             pass
 
-    # открывает файл со значениями и вставляет в поля ввода
+    # открывает файл со значениями, вставляет в поля ввода
     def open(self):
         try:
             fname = QFileDialog.getOpenFileName()
@@ -937,7 +902,6 @@ class Ui_MainWindow(object):
     # очищает поля ввода
     def delete(self):
         try:
-
             self.n_lineEdit.setText("")
             self.m_lineEdit.setText("")
             self.R0_lineEdit.setText("")
@@ -961,7 +925,4 @@ class Ui_MainWindow(object):
 
     # закрывает программу
     def exit(self):
-        pass
-
-
-
+        exit()
