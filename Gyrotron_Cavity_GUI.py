@@ -15,7 +15,6 @@
 
 
 from import_all import *
-from auxiliary_functions import *
 
 # глобальные переменные
 Ri = np.array([0.0])

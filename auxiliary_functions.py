@@ -31,7 +31,7 @@ class Auxiliary_Functions:
                 list_out.append(i)
         return list_out
 
-    # заменяет "e" на "E"
+    # заменяет "e" на "E" (для Fortran)
     def scientific_notation(self, number):
         """
     Format a floating-point scalar as a decimal string in scientific notation.

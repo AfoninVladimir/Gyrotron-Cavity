@@ -21,3 +21,4 @@ from numpy import sin, cos, tan, arcsin, arccos, arctan, sinh, cosh, tanh, arcsi
 from numpy import degrees  # Преобразует радианную меру угла в градусную.
 from numpy import radians  # Преобразует градусную меру угла в радианную.
 from plot_mods import plot_mods
+from auxiliary_functions import *

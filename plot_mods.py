@@ -89,15 +89,9 @@ def plot_mods(k, zi):
 
     # # аргумент комплексного числа
     def complex_arg(x):
-        Re = []
-        Im = []
         Compl = []
         for i in x:
-            Re.append(i.real)
-            Im.append(i.imag)
-
-        for i in range(len(Re)):
-            Compl.append(-np.arctan2(Re[i], Im[i]))
+            Compl.append(-np.arctan2(i.real, i.imag))
 
         return Compl
 
