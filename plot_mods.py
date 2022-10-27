@@ -4,82 +4,84 @@
 ##
 ## PROJECT: GYROTRON CAVITY GUI
 ##
-## V: 0.6.0
+## V: 1.0.0
 ##
 ########################################################################################################################
-import matplotlib.pyplot as plt
-import numpy as np
-
-v = []
+from import_all import *
 
 
 def plot_mods(k, zi):
     # чтение из фалай (вычислительного модуля)
     def read_file(l):
-        # считатет кол-во строк
-        def inter(x):
-            nn = x // 3
-            if x % 3 != 0:
-                nn += 1
-            return nn
 
-        # считывает данные
-        def function(k):
-            func2 = ""
-            mod2 = []
-            mod = []
-            for i in range(k):
-                func2 += file.readline()
-            func2 = func2.splitlines()
-            for i in func2:
-                mod.append(i.split("  "))
-            for i in range(len(mod)):
-                mod2 += mod[i]
-            return mod2
+        def read_num_comp(file):
+            nums = []
+            reim = []
+            while ":" in (st := file.readline()):
+                nums.append(st[st.index(":") + 2: -3])
+            nums = "  ".join(nums).split(")  (")
+            for i in range(len(nums)):
+                nums[i] = nums[i].replace("(", "").replace(")", "").replace("D", "e")
+                b = nums[i].split(",")
+                reim.append(complex(float(b[0]), float(b[1])))
+            return reim
 
-        # считывание комплексного числа
-        def fan(x):
-            a = []
-            c = []
-            for i in x:
-                a.append(i[i.index('(') + 1:i.index(')')])
-            for i in a:
-                b = i.split(", ")
-                c.append(complex(float(b[0]), float(b[1])))
-            return c
+        def read_num(file):
+            nums_z = []
+            nums = []
+            reim = []
+            while ":" in (st := file.readline()):
+                nums.append(st[st.index(":") + 4: -1])
+            nums = "  ".join(nums).split(")  (")
+            for i in range(len(nums)):
+                nums[i] = nums[i].replace("(", "").replace(")", "").replace("D", "e")
+                nums_z = nums[i].split("  ")
 
-        file = open("MathExport.dat", "r")
-        func1 = file.readline().split()
-        NN = int(func1[0])
-        mods = int(func1[1])
+            for j in range(len(nums_z)):
+                nums_z[j] = float(nums_z[j])
+            return nums_z
 
-        nn = inter(NN)
-        mod = inter(mods)
-        f = file.readline()
+        file = open("MathExport1.dat")
 
-        furt = []
-        rts = []
+        for i in range(3):
+            file.readline()
 
-        # собственные числа
-        global v
-        v = fan(function(mod))
-        f = file.readline()
+        R = []
+        eigenvalues = []
 
-        for i in range(mods // 2):
-            rts1 = file.readline().split()
-            rts.append(float(rts1[0]))
-            rts.append(float(rts1[1]))
+        """Dimensionless frequencies OmegaL2divR2:"""
+        dim_freq = read_num_comp(file)
+        eigenvalues.append(dim_freq)
 
-        # считывание координат точек
+        # Calculated number of eigenvalues
+        mods = int(file.readline().split("=")[1])
+
+        for i in range(3):
+            file.readline()
+
+        """Calculated Eigenvalues:"""
+        calcul_eigenval = read_num_comp(file)
+        eigenvalues.append(calcul_eigenval)
+
+        # Number of grid points
+        NN = int(file.readline().split("=")[1])
+
+        for i in range(3):
+            file.readline()
+        # Z - coordinate of grid points:
+        z = read_num(file)
+        file.readline()
+
+        # Eigenvector`s
         for i in range(mods):
-            f = file.readline()
-            furt.append(function(nn))
+            file.readline()
+            file.readline()
+            R.append(read_num_comp(file))
+            file.readline()
 
-        for i in range(len(furt)):
-            furt[i] = fan(furt[i])
         file.close()
 
-        return furt[l]
+        return R[l]
 
     # модуль комплексного числа
     def complex_abs(comp):
@@ -87,12 +89,11 @@ def plot_mods(k, zi):
             comp[i] = np.abs(comp[i])
         return comp
 
-    # # аргумент комплексного числа
+    # аргумент комплексного числа
     def complex_arg(x):
         Compl = []
         for i in x:
             Compl.append(-np.arctan2(i.real, i.imag))
-
         return Compl
 
     # построение графиков
@@ -100,12 +101,12 @@ def plot_mods(k, zi):
     plt.xlabel("z, мм")
     plt.ylabel("R(z),мм")
     plt.grid()
-    plt.plot(zi, complex_abs(read_file(k)))
+    plt.plot(zi * 1000, complex_abs(read_file(k)))
 
     plt.figure((2 * (k + 1)) + 1)
     plt.xlabel("z, мм")
     plt.ylabel("R(z),мм")
     plt.grid()
-    plt.plot(zi, complex_arg(read_file(k)))
+    plt.plot(zi * 1000, complex_arg(read_file(k)))
 
     plt.show()

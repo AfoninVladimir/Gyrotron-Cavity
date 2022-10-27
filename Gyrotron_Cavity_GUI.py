@@ -4,7 +4,7 @@
 ##
 ## PROJECT: GYROTRON CAVITY GUI
 ##
-## V: 0.6.0
+## V: 1.0.0
 ##
 ########################################################################################################################
 # -*- coding: utf-8 -*-
@@ -15,6 +15,7 @@
 
 
 from import_all import *
+import subprocess, time
 
 # глобальные переменные
 Ri = np.array([0.0])
@@ -656,15 +657,15 @@ class Ui_MainWindow(object):
     def button_click_processing(self):
         # выполнение функции "Run" по нажатию кнопки "Запуск"
         self.Run_Button.clicked.connect(self.run)
-        # выполнение функции "SaveINFile" по нажатию кнопки "Сохранить"
+        # выполнение функции "save" по нажатию кнопки "Сохранить"
         self.Save_Button.clicked.connect(self.save)
-        # выполнение функции "OpenFile" по нажатию кнопки "Открыть"
+        # выполнение функции "open" по нажатию кнопки "Открыть"
         self.Open_Button.clicked.connect(self.open)
-        # выполнение функции "DeleteEdits" по нажатию кнопки "Очистить"
+        # выполнение функции "delete" по нажатию кнопки "Очистить"
         self.Delete_Button.clicked.connect(self.delete)
-        # выполнение функции "Help" по нажатию кнопки "Help"
+        # выполнение функции "help" по нажатию кнопки "Help"
         self.Help_Button.clicked.connect(self.help)
-        # выполнение функции "Exit" по нажатию кнопки "Exit"
+        # выполнение функции "exit" по нажатию кнопки "Exit"
         self.Exit_Button.clicked.connect(self.exit)
 
     # Построение профиля резонатора
@@ -678,11 +679,8 @@ class Ui_MainWindow(object):
             for j in range(0, len(RZ), 2):
                 if eval(RZ[j]):
                     Rzt[n] = eval(RZ[j + 1])
-        Ri = Rzt * 2
+        Ri = Rzt
 
-        # plt.xlabel('z, мм', fontsize=18, fontweight="bold")
-        # plt.ylabel('R(z), мм', fontsize=18, fontweight="bold")
-        # plt.tick_params(axis='both', which='major', labelsize=20)
         plt.figure(figsize = (12, 6.75))
         plt.xlabel('z, мм')
         plt.ylabel('R(z), мм')
@@ -748,24 +746,11 @@ class Ui_MainWindow(object):
             for i in RZt:
                 RZ += i
 
-            numn = special.jn_zeros(abs(m), n)
-            numn = numn[-1]
-            omega0 = c0 * numn / R0
-            f0 = omega0 / 2 * pi
-
             """ Сетка по координате """
             znorm = L
-            z1 = z_start
-            zN = z_finish
-            NN = round((zN - z1) / dz)
-            zi = arange(z1, zN, dz)
-            zi = zi[:-1]
-            ksii = zi / znorm
-            Delksi = dz / znorm
-
-            """Сдвиг"""
-            # Omega0 = (numn * dz / L) ** 2 * OmegaL2divR2
-            # Shift0 = (numn * dz / L) ** 2 * Shift
+            zi = arange(z_left, z_right, dz)
+            zi = zi[::-1]
+            NN = len(zi)
 
             """Rz"""
             self.Rz(zi, RZ)
@@ -782,7 +767,7 @@ class Ui_MainWindow(object):
             file.write("m" + " " * 15 + str(m) + "\n")
             file.write("nr" + " " * 14 + str(n) + "\n")
             file.write("L" + " " * 15 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, L)) + "\n")
-            file.write("nMods" + " " * 11 + str(nMods) + "\n")
+            file.write("NModes" + " " * 10 + str(nMods) + "\n")
             file.write("R0" + " " * 14 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, R0)) + "\n")
             file.write(
                 "sigma" + " " * 11 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, sigma)) + "\n")
@@ -797,7 +782,7 @@ class Ui_MainWindow(object):
             file.write(
                 "zstart" + " " * 10 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_start)) + "\n")
             file.write(
-                "zfin" + " " * 12 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_finish)) + "\n")
+                "zfin" + " " * 12 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions,z_finish)) + "\n")
             file.write("dz" + " " * 14 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, dz)) + "\n")
             file.write("Tolerance" + " " * 7 + str(
                 Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Tolerance)) + "\n")
@@ -823,12 +808,9 @@ class Ui_MainWindow(object):
 
             file.close()
 
-            zik = []
-            for i in range(len(zi)):
-                zik.append(float(zi[i]))
-
+            self.start_GyCa()
             for i in range(nMods):
-                plot_mods(i, zik)
+                plot_mods(i, zi)
 
         except:
             error = QMessageBox()
@@ -925,3 +907,6 @@ class Ui_MainWindow(object):
     # закрывает программу
     def exit(self):
         exit()
+
+    def start_GyCa(self):
+        subprocess.call("gyrocavityfdm.exe DataForFortran.dat MathExport1.dat")
