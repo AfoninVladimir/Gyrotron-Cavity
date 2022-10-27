@@ -651,7 +651,7 @@ class Ui_MainWindow(object):
         self.Omega_label.setText(_translate("MainWindow", "Omega"))
         self.z_right_label.setText(_translate("MainWindow", "z right"))
         self.Named.setText(_translate("MainWindow", "СГУ"))
-        self.Number_Version.setText(_translate("MainWindow", "v0.6.0"))
+        self.Number_Version.setText(_translate("MainWindow", "v1.0.0"))
 
     # обработка нажатий на кнопки
     def button_click_processing(self):
