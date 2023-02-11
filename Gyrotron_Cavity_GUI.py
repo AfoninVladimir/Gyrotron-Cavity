@@ -693,6 +693,14 @@ class Ui_MainWindow(object):
     # присваивание значений переменым и посторение графика
     def run(self):
         try:
+            LinearApproximation = True
+            Eigenfunctions = False
+            PrintInfo = False
+            DebugInfo = False
+            PrintTime = False
+            ConditionNumberFound = False
+            Shift = 0.0
+            ShiftFraction = 0.01
 
             c0 = 299792458
             mu0 = 4 * np.pi * 10 ** (-7)  # мю 0
