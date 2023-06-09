@@ -911,5 +911,5 @@ class Ui_MainWindow(object):
         exit()
 
     def start_GyCa(self):
-        subprocess.call("gyrocavityfdm.exe DataForFortran.dat MathExport1.dat")
-        # subprocess.call("GyrotronCavityFDMC-2.3.exe DataForFortran.dat MathExport1.dat")
+        # subprocess.call("gyrocavityfdm.exe DataForFortran.dat MathExport1.dat")
+        subprocess.call("gyrocavityfdm-0.2.exe DataForFortran.dat MathExport1.dat")
