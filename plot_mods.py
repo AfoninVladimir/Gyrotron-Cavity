@@ -7,6 +7,8 @@
 ## V: 1.0.0
 ##
 ########################################################################################################################
+import matplotlib.pyplot as plt
+
 from import_all import *
 
 
@@ -92,18 +94,25 @@ def plot_mods(k, zi):
     # аргумент комплексного числа
     def complex_arg(x):
         Compl = []
-        for i in x:
-            Compl.append(-np.arctan2(i.real, i.imag))
+
+        for i in range(len(x)):
+            Compl.append(-np.arctan2(x[i].real, x[i].imag))
+
+        n = Compl.index(min(Compl, key=abs))
+
+        for i in range(len(Compl)):
+            Compl[i] = Compl[i] / -np.arctan2(x[n].real, x[n].imag)
         return Compl
 
+
     # построение графиков
-    plt.figure(2 * (k + 1))
+    plt.figure(f"Мода %2d" % (k+1))
     plt.xlabel("z, мм")
     plt.ylabel("R(z),мм")
     plt.grid()
     plt.plot(zi * 1000, complex_abs(read_file(k)))
 
-    plt.figure((2 * (k + 1)) + 1)
+    plt.figure(f"Фаза %2d" % (k+1))
     plt.xlabel("z, мм")
     plt.ylabel("R(z),мм")
     plt.grid()

@@ -681,7 +681,7 @@ class Ui_MainWindow(object):
                     Rzt[n] = eval(RZ[j + 1])
         Ri = Rzt
 
-        plt.figure(figsize = (12, 6.75))
+        plt.figure("Профиль резонатора", figsize = (12, 6.75))
         plt.xlabel('z, мм')
         plt.ylabel('R(z), мм')
         plt.grid(True)
@@ -761,7 +761,8 @@ class Ui_MainWindow(object):
             ShiftFraction = 0.5
             Eigenfunc = 1
             LinApprox = 1
-            CondNumber = 0
+            CondNumber = 1
+            ConductanceThreshold = 0.100000000000E+12 # ConductanceThreshold
 
             with open("DataForFortran.dat", "w") as file:
                 file.write("m" + " " * 15 + str(m) + "\n")
@@ -793,6 +794,8 @@ class Ui_MainWindow(object):
                 file.write("Eigenfunc" + " " * 7 + str(Eigenfunc) + "\n")
                 file.write("LinApprox" + " " * 7 + str(LinApprox) + "\n")
                 file.write("CondNumber" + " " * 6 + str(CondNumber) + "\n")
+                file.write("CondThresh" + " " * 6 + str(
+                    Auxiliary_Functions.scientific_notation(Auxiliary_Functions, ConductanceThreshold)) + "\n")
                 file.write("NN" + " " * 14 + str(NN) + "\n")
                 file.write("Ri" + " " * 12)
 
@@ -944,4 +947,5 @@ class Ui_MainWindow(object):
 
     def start_GyCa(self):
         # subprocess.call("gyrocavityfdm.exe DataForFortran.dat MathExport1.dat")
-        subprocess.call("gyrocavityfdm-0.2.exe DataForFortran.dat MathExport1.dat")
+        # subprocess.call("gyrocavityfdm-0.2.exe DataForFortran.dat MathExport1.dat")
+        subprocess.call("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")
