@@ -682,11 +682,15 @@ class Ui_MainWindow(object):
         Ri = Rzt
 
         plt.figure("Профиль резонатора", figsize = (12, 6.75))
-        plt.xlabel('z, мм')
-        plt.ylabel('R(z), мм')
+        # plt.xlabel('z, мм')
+        # plt.ylabel('R(z), мм')
+        # plt.plot(zi * 1000, Rzt * 1000, "b")
+        # plt.plot(zi * 1000, -Rzt * 1000, "b")
+        plt.xlabel('z, м')
+        plt.ylabel('R(z), м')
+        plt.plot(zi, Rzt, "b")
+        plt.plot(zi, -Rzt, "b")
         plt.grid(True)
-        plt.plot(zi * 1000, Rzt * 1000, "b")
-        plt.plot(zi * 1000, -Rzt * 1000, "b")
         plt.subplots_adjust(top = 0.98, bottom = 0.08, left = 0.08, right = 0.98, hspace = 0.2, wspace = 0.2)
         plt.show()
 
