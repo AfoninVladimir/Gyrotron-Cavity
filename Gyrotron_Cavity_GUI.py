@@ -19,7 +19,6 @@ import subprocess, time
 
 # глобальные переменные
 Ri = np.array([0.0])
-v = []
 
 
 class Ui_MainWindow(object):
@@ -697,37 +696,26 @@ class Ui_MainWindow(object):
     # присваивание значений переменым и посторение графика
     def run(self):
         try:
-            LinearApproximation = True
-            Eigenfunctions = False
-            PrintInfo = False
-            DebugInfo = False
-            PrintTime = False
-            ConditionNumberFound = False
-            Shift = 0.0
-            ShiftFraction = 0.01
 
-            c0 = 299792458
-            mu0 = 4 * np.pi * 10 ** (-7)  # мю 0
-            epsilon0 = 8.854187935757958 * 10 ** (-12)
-            e0 = 1.602176620898 * 10 ** (-19)
-            m0 = 9.10938356 * 10 ** (-31)
-            mm = 10 ** (-3)
-            cm = 10 ** (-2)
-            GHz = 10 ** 9
+            """Константы"""
+            c0 = 299792458      # скоротсь света
+            mm = 10 ** (-3)     # миллиметр
+            cm = 10 ** (-2)     # сантиметр
+            GHz = 10 ** 9       # Гигагерц
 
-            n = int(self.n_lineEdit.text())
-            m = int(self.m_lineEdit.text())
-            nMods = int(self.Nmods_lineEdit.text())
-            sigma = float(self.Sigma_lineEdit.text())
-            OmegaL2divR2 = complex(self.Omega_lineEdit.text())
+            n = int(self.n_lineEdit.text())                     # радиальный индекс
+            m = int(self.m_lineEdit.text())                     # азимутальный индекс
+            nMods = int(self.Nmods_lineEdit.text())             # число мод в расчетах квазисобственных колебаний в резонаторе
+            sigma = float(self.Sigma_lineEdit.text())           # проводимость материала резонатора
+            OmegaL2divR2 = complex(self.Omega_lineEdit.text())  # Сдвиг
 
-            R0 = self.R0_lineEdit.text()
-            L = self.L_lineEdit.text()
-            z_left = self.z_left_lineEdit.text()
-            z_right = self.z_right_lineEdit.text()
-            z_start = self.z_start_lineEdit.text()
-            z_finish = self.z_finish_lineEdit.text()
-            dz = self.dz_lineEdit.text()
+            R0 = self.R0_lineEdit.text()                # радиус однородной части резонатора
+            L = self.L_lineEdit.text()                  # длина однородной части резонатора
+            z_left = self.z_left_lineEdit.text()        # координата левой границы расчетной области
+            z_right = self.z_right_lineEdit.text()      # координата правой границы расчетной области
+            z_start = self.z_start_lineEdit.text()      # координата начала пространства взаимодействия
+            z_finish = self.z_finish_lineEdit.text()    # координата конца пространства взаимодействия
+            dz = self.dz_lineEdit.text()                # шаг разбиения сетки
 
             list_input = [R0, L, z_left, z_right, z_start, z_finish, dz]
             list_output = Auxiliary_Functions.transfer_to_the_SI_system(Auxiliary_Functions, list_input)
@@ -752,7 +740,7 @@ class Ui_MainWindow(object):
 
             """ Сетка по координате """
             znorm = L
-            zi = arange(z_left, z_right+dz, dz)
+            zi = arange(z_left, z_right + dz, dz)
             zi = zi[::-1]
             NN = len(zi)
 
@@ -766,33 +754,41 @@ class Ui_MainWindow(object):
             Eigenfunc = 1
             LinApprox = 1
             CondNumber = 1
-            ConductanceThreshold = 0.100000000000E+12 # ConductanceThreshold
+            ConductanceThreshold = 0.100000000000E+12  # ConductanceThreshold
 
-            with open("DataForFortran.dat", "w") as file:
+            with open("calculation_module/DataForFortran.dat", "w") as file:
                 file.write("m" + " " * 15 + str(m) + "\n")
                 file.write("nr" + " " * 14 + str(n) + "\n")
                 file.write("L" + " " * 15 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, L)) + "\n")
                 file.write("NModes" + " " * 10 + str(nMods) + "\n")
-                file.write("R0" + " " * 14 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, R0)) + "\n")
                 file.write(
-                    "sigma" + " " * 11 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, sigma)) + "\n")
+                    "R0" + " " * 14 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, R0)) + "\n")
+                file.write(
+                    "sigma" + " " * 11 + str(
+                        Auxiliary_Functions.scientific_notation(Auxiliary_Functions, sigma)) + "\n")
                 file.write("OmegaL2divR20re" + " " * 1 + str(
                     Auxiliary_Functions.scientific_notation(Auxiliary_Functions, OmegaL2divR2.real)) + "\n")
                 file.write("OmegaL2divR20im" + " " * 1 + str(
                     Auxiliary_Functions.scientific_notation(Auxiliary_Functions, OmegaL2divR2.imag)) + "\n")
                 file.write(
-                    "zleft" + " " * 11 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_left)) + "\n")
+                    "zleft" + " " * 11 + str(
+                        Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_left)) + "\n")
                 file.write(
-                    "zright" + " " * 10 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_right)) + "\n")
+                    "zright" + " " * 10 + str(
+                        Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_right)) + "\n")
                 file.write(
-                    "zstart" + " " * 10 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_start)) + "\n")
+                    "zstart" + " " * 10 + str(
+                        Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_start)) + "\n")
                 file.write(
-                    "zfin" + " " * 12 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_finish)) + "\n")
-                file.write("dz" + " " * 14 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, dz)) + "\n")
+                    "zfin" + " " * 12 + str(
+                        Auxiliary_Functions.scientific_notation(Auxiliary_Functions, z_finish)) + "\n")
+                file.write(
+                    "dz" + " " * 14 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, dz)) + "\n")
                 file.write("Tolerance" + " " * 7 + str(
                     Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Tolerance)) + "\n")
                 file.write(
-                    "Shift" + " " * 11 + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Shift)) + "\n")
+                    "Shift" + " " * 11 + str(
+                        Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Shift)) + "\n")
                 file.write("ShiftFraction" + " " * 3 + str(
                     Auxiliary_Functions.scientific_notation(Auxiliary_Functions, ShiftFraction)) + "\n")
                 file.write("Eigenfunc" + " " * 7 + str(Eigenfunc) + "\n")
@@ -806,14 +802,16 @@ class Ui_MainWindow(object):
                 if len(Ri) % 5 == 0:
                     for i in range(0, len(Ri), 5):
                         for j in range(5):
-                            file.write("  " + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Ri[i + j])))
-                        if i < len(Ri)-5:
+                            file.write(
+                                "  " + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Ri[i + j])))
+                        if i < len(Ri) - 5:
                             file.write("\n")
                             file.write(" " * 14)
                 else:
-                    for i in range(0, len(Ri)-5, 5):
+                    for i in range(0, len(Ri) - 5, 5):
                         for j in range(5):
-                            file.write("  " + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Ri[i + j])))
+                            file.write(
+                                "  " + str(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, Ri[i + j])))
                         file.write("\n")
                         file.write(" " * 14)
                     for i in range(len(Ri) % 5, 0, -1):
@@ -831,7 +829,9 @@ class Ui_MainWindow(object):
                     cs += file.readline()
 
             print(cs)
-            cs = cs.replace("\n", "").replace("  ", " ").replace(") (", ")  (").strip().replace(")", "").replace("(", "").split("  ")
+            cs = cs.replace("\n", "").replace("  ", " ").replace(") (", ")  (").strip().replace(")", "").replace("(",
+                                                                                                                 "").split(
+                "  ")
             for i in range(len(cs)):
                 c = cs[i].split(", ")
                 cs[i] = complex(float(c[0]), float(c[1]))
@@ -840,18 +840,19 @@ class Ui_MainWindow(object):
             QualityFactor = []
 
             for OmegaL2divR2 in cs:
-                BesselJYZeros = special.jnyn_zeros(m, n)[1][n-1]
-                omega = OmegaL2divR2 * ((R0/L) ** 2)
-                EigenFrequency.append(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, (1/(2*pi)) * (BesselJYZeros / R0) * c0 * (sqrt(1 + omega)).real))
+                BesselJYZeros = special.jnyn_zeros(m, n)[1][n - 1]
+                omega = OmegaL2divR2 * ((R0 / L) ** 2)
+                EigenFrequency.append(Auxiliary_Functions.scientific_notation(Auxiliary_Functions, (1 / (2 * pi)) * (
+                            BesselJYZeros / R0) * c0 * (sqrt(1 + omega)).real))
                 QualityFactor.append((sqrt(1 + omega)).real / (2 * sqrt(1 + omega).imag))
 
             print("EigenFrequency:")
             for i in range(len(EigenFrequency)):
-                print(f"%2d: {EigenFrequency[i]}" %(i+1))
+                print(f"%2d: {EigenFrequency[i]}" % (i + 1))
             print()
             print("QualityFactor:")
             for i in range(len(QualityFactor)):
-                print(f"%2d: {QualityFactor[i]}" %(i+1))
+                print(f"%2d: {QualityFactor[i]}" % (i + 1))
 
         except:
             error = QMessageBox()
@@ -952,4 +953,7 @@ class Ui_MainWindow(object):
     def start_GyCa(self):
         # subprocess.call("gyrocavityfdm.exe DataForFortran.dat MathExport1.dat")
         # subprocess.call("gyrocavityfdm-0.2.exe DataForFortran.dat MathExport1.dat")
-        subprocess.call("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")
+        # print(os.getcwd())
+        os.chdir("./calculation_module")
+        # print(os.getcwd())
+        code = subprocess.run("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")

@@ -45,7 +45,6 @@ def plot_mods(k, zi):
             for j in range(len(nums_z)):
                 nums_z[j] = float(nums_z[j])
             return nums_z
-
         file = open("MathExport1.dat")
 
         for i in range(3):
@@ -108,7 +107,7 @@ def plot_mods(k, zi):
     # plt.ylabel("R(z),мм")
     # plt.plot(zi * 1000, complex_abs(read_file(k)))
     plt.xlabel("z, м")
-    plt.ylabel("R(z),м")
+    plt.ylabel("F, a.e.")
     plt.plot(zi, complex_abs(read_file(k)))
 
     plt.figure(f"Фаза %2d" % (k + 1))
@@ -117,7 +116,7 @@ def plot_mods(k, zi):
     # plt.ylabel("R(z),мм")
     # plt.plot(zi * 1000, complex_arg(read_file(k)))
     plt.xlabel("z, м")
-    plt.ylabel("R(z),м")
+    plt.ylabel("Arg F, рад")
     plt.plot(zi, complex_arg(read_file(k)))
 
 

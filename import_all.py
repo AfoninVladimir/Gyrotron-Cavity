@@ -11,6 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5 import *
 import sys
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import *
