@@ -809,7 +809,7 @@ class Ui_MainWindow(object):
             ConductanceThreshold = 0.100000000000E+12  # ConductanceThreshold
 
             # Вывод параметров в файл для расчётного модуля
-            with open("DataForFortran.dat", "w", encoding = "utf-8") as file:
+            with open("calculation_module/DataForFortran.dat", "w", encoding = "utf-8") as file:
                 file.write("m" + " " * 15 + str(m) + "\n")
                 file.write("nr" + " " * 14 + str(n) + "\n")
                 file.write("L" + " " * 15 + str(support_functions.scientific_notation(support_functions, L)) + "\n")
