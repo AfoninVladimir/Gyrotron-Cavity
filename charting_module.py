@@ -47,7 +47,6 @@ class charting_module:
         '''
 
         n = np.argsort(np.abs(zi))[0]
-
         """Построение графиков мод"""
         plt.figure(f"Мода %2d" % (k + 1))  # Название окна графика
         plt.grid()  # Отображает сетку
@@ -55,7 +54,6 @@ class charting_module:
         plt.ylabel("F, a.e.")  # Подпись к оси y
         plt.plot(zi, self.complex_abs(self.read_file(k)))  # Построение графиков (plot(x, y),
         # где x и y - массивы(списки) одинаковой длины)
-
         """Построение графиков фаз"""
         plt.figure(f"Фаза %2d" % (k + 1))  # Название окна графика
         plt.grid()  # Отображает сетку
@@ -72,14 +70,13 @@ class charting_module:
         Он использует 2 вспомогательных модуля: `read_num_comp` и `read_num`.
         """
 
-        file = open("calculation_module/MathExport1.dat")
+        file = open("calculation_module/MathExport1.dat", "r", encoding = "utf-8")
 
         for i in range(3):
             file.readline()
 
         R = []
         eigenvalues = []
-
         """Dimensionless frequencies OmegaL2divR2:"""
         dim_freq = self.read_num_comp(file)
         eigenvalues.append(dim_freq)

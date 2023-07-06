@@ -21,14 +21,27 @@ from imports import *
 
 # глобальные переменные
 Ri = []
+count = -1
 
 
 class Ui_MainWindow(object):
-    """"""
+    """
+    # Реализация графического интерфейса
+    """
 
     # тело окна
     def setupUi(self, MainWindow):
-        """тело окна"""
+        """
+        ##Тело окна
+
+        В данном методе описанные все составляющие графического интерфейса.
+        Данный метод был сгенерирован программой Qt Designer.
+
+        В его конец был вставлен следующий фрагмент:
+            # вызов основных функций
+            self.button_click_processing()
+        Это вызов метода обработчика нажатия кнопок.
+        """
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1200, 740)
@@ -633,6 +646,12 @@ class Ui_MainWindow(object):
 
     # наименования строк
     def retranslateUi(self, MainWindow):
+        """
+        ## Надписи
+
+        Метод отвечает за отображение надписей и из содержания.
+        Данный метод был сгенерирован программой Qt Designer.
+        """
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Gyrotron Cavity"))
         self.Program_Name.setText(_translate("MainWindow", "Gyrotron Cavity"))
@@ -659,6 +678,19 @@ class Ui_MainWindow(object):
 
     # обработка нажатий на кнопки
     def button_click_processing(self):
+        """
+        Метод реализует обработчик событий нажатия на кнопки.
+
+        |   Кнопка     |    Функция     |
+        |--------------|----------------|
+        |   Запуск     |      run       |
+        |   Сохранить  |      save      |
+        |   Открыть    |      open      |
+        |   Очистить   |     delete     |
+        |   Help       |     help       |
+        |   Exit       |     exit       |
+        """
+
         # выполнение функции "Run" по нажатию кнопки "Запуск"
         self.Run_Button.clicked.connect(self.run)
         # выполнение функции "save" по нажатию кнопки "Сохранить"
@@ -674,6 +706,15 @@ class Ui_MainWindow(object):
 
     # Построение профиля резонатора
     def Rz(self, zi, RZ):
+        """
+        Построение профиля резонатора
+
+        zi - массив узлов сетки
+        RZ - массив строк задаваемые функцию резонатора
+        Ri - массив радиусов, глобальная переменная
+
+        [`eval`](https://docs.python.org/3/library/functions.html)
+        """
         global Ri
         Rzt = array([0.0] * len(zi))
         n = -1
@@ -695,6 +736,17 @@ class Ui_MainWindow(object):
 
     # присваивание значений переменым и посторение графика
     def run(self):
+        """
+        ##Основной модуль
+
+        Здесь объявляются константы, считываются данные из полей ввода: параметры гиротрона и функция профиля.
+        Предварительная обработка данных имеющие размерность. Построение сетки узлов.
+        Вызов метода RZ(), который строит профиль резонатора: `self.Rz(zi, RZ)`.
+        Вывод данных в файл DataForFortran.dat для расчётного модуля на Fortran.
+        Запуск вычислительного модуля: `self.start_GyCa()`.
+        Построение графиков мод и фаз.
+        Считывание комплексных амплитуд и вычисление частот и добротности.
+        """
         try:
 
             """Константы"""
@@ -756,7 +808,8 @@ class Ui_MainWindow(object):
             CondNumber = 1
             ConductanceThreshold = 0.100000000000E+12  # ConductanceThreshold
 
-            with open("calculation_module/DataForFortran.dat", "w") as file:
+            # Вывод параметров в файл для расчётного модуля
+            with open("calculation_module/DataForFortran.dat", "w", encoding = "utf-8") as file:
                 file.write("m" + " " * 15 + str(m) + "\n")
                 file.write("nr" + " " * 14 + str(n) + "\n")
                 file.write("L" + " " * 15 + str(support_functions.scientific_notation(support_functions, L)) + "\n")
@@ -815,6 +868,7 @@ class Ui_MainWindow(object):
                         file.write(" " * 14)
                     for i in range(len(Ri) % 5, 0, -1):
                         file.write("  " + str(support_functions.scientific_notation(support_functions, Ri[-i])))
+
             self.start_GyCa()
             for i in range(nMods):
                 charting_module(i, zi)
@@ -826,7 +880,6 @@ class Ui_MainWindow(object):
             #     for i in range((nMods // 3) + (nMods % 3)):
             #         cs += file.readline()
             #
-            # print(cs)
             # cs = cs.replace("\n", "").replace("  ", " ").replace(") (", ")  (").strip().replace(")", "").replace("(",
             #                                                                                                      "").split(
             #     "  ")
@@ -863,6 +916,10 @@ class Ui_MainWindow(object):
 
     # сохраняет данные в файл
     def save(self):
+        """
+        ## Сохранение данных в файл
+        """
+
         try:
             n = self.n_lineEdit.text()
             m = self.m_lineEdit.text()
@@ -893,6 +950,9 @@ class Ui_MainWindow(object):
 
     # открывает файл со значениями, вставляет в поля ввода
     def open(self):
+        """
+        ## Открывает файл с параметрами гиротрона
+        """
         try:
             fname = QFileDialog.getOpenFileName()
             file = open(fname[0], "r")
@@ -922,6 +982,9 @@ class Ui_MainWindow(object):
 
     # очищает поля ввода
     def delete(self):
+        """
+         ##Очищение всех полей ввода
+        """
         try:
             self.n_lineEdit.setText("")
             self.m_lineEdit.setText("")
@@ -942,6 +1005,14 @@ class Ui_MainWindow(object):
 
     # помощь
     def help(self):
+        """
+        ##Открывает документацию
+
+        - [getcwd()](https://docs.python.org/3/library/os.html)
+        - [chdir()](https://docs.python.org/3/library/os.html)
+        - [startfile()](https://docs.python.org/3/library/os.html)
+        """
+
         dir = "Documentation"
         srcdir = os.getcwd()[-(len(dir)): len(os.getcwd())]
         if srcdir == dir:
@@ -954,8 +1025,25 @@ class Ui_MainWindow(object):
 
     # закрывает программу
     def exit(self):
-        """Метод реализует процедуру закрытия программы"""
-        exit()  # https://docs.python.org/3/library/sys.html
+        """
+        ##Метод реализует процедуру закрытия программы
 
+        [exit()](https://docs.python.org/3/library/sys.html)
+        """
+        exit()
+
+    # запуск расчётного модуля
     def start_GyCa(self):
-        code = subprocess.run("calculation_module/gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")
+        """
+        ## Запуск вычислительного модуля на Fortran
+
+        [subprocess.run](https://docs.python.org/3/library/subprocess.html)
+        """
+        # global count
+        # count += 1
+        # if count == 0:
+        #     os.chdir("./calculation_module")
+        #     code = subprocess.run("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")
+        # else:
+        os.chdir("./calculation_module")
+        code = subprocess.run("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")
