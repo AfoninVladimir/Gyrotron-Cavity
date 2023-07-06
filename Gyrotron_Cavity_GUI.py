@@ -809,7 +809,7 @@ class Ui_MainWindow(object):
             ConductanceThreshold = 0.100000000000E+12  # ConductanceThreshold
 
             # Вывод параметров в файл для расчётного модуля
-            with open("calculation_module/DataForFortran.dat", "w", encoding = "utf-8") as file:
+            with open("DataForFortran.dat", "w", encoding = "utf-8") as file:
                 file.write("m" + " " * 15 + str(m) + "\n")
                 file.write("nr" + " " * 14 + str(n) + "\n")
                 file.write("L" + " " * 15 + str(support_functions.scientific_notation(support_functions, L)) + "\n")
@@ -1039,11 +1039,6 @@ class Ui_MainWindow(object):
 
         [subprocess.run](https://docs.python.org/3/library/subprocess.html)
         """
-        # global count
-        # count += 1
-        # if count == 0:
-        #     os.chdir("./calculation_module")
-        #     code = subprocess.run("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")
-        # else:
+        global count
         os.chdir("./calculation_module")
         code = subprocess.run("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")

@@ -70,7 +70,7 @@ class charting_module:
         Он использует 2 вспомогательных модуля: `read_num_comp` и `read_num`.
         """
 
-        file = open("calculation_module/MathExport1.dat", "r", encoding = "utf-8")
+        file = open("MathExport1.dat", "r", encoding = "utf-8")
 
         for i in range(3):
             file.readline()
