@@ -628,7 +628,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        # вызыв основных функций
+        # вызов основных функций
         self.button_click_processing()
 
     # наименования строк
@@ -958,10 +958,4 @@ class Ui_MainWindow(object):
         exit()  # https://docs.python.org/3/library/sys.html
 
     def start_GyCa(self):
-        dir = "calculation_module"
-        srcdir = os.getcwd()[-(len(dir)): len(os.getcwd())]
-        if srcdir == dir:
-            pass
-        elif "GyrotronCavity" in srcdir:
-            os.chdir("./calculation_module")
-        code = subprocess.run("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")
+        code = subprocess.run("calculation_module/gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")
