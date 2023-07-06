@@ -30,6 +30,7 @@ class support_functions:
         - тип: список (list)
         - тип параметров: строка (str)
         - длина: 7
+
         list_input = [R0, L, z_left, z_right, z_start, z_finish, dz]
 
         Возвращает:
@@ -38,6 +39,7 @@ class support_functions:
         - тип: список (list)
         - тип параметров: число с плавающей точкой (float)
         - длина: 7
+
         list_out = [R0, L, z_left, z_right, z_start, z_finish, dz]
         '''
 
