@@ -808,8 +808,12 @@ class Ui_MainWindow(object):
             CondNumber = 1
             ConductanceThreshold = 0.100000000000E+12  # ConductanceThreshold
 
-            # Вывод параметров в файл для расчётного модуля
-            with open("calculation_module/DataForFortran.dat", "w", encoding = "utf-8") as file:
+            srcdir = os.getcwd()[(os.getcwd().rfind("\\") + 1): len(os.getcwd())]
+            if srcdir != "Gyrotron-Cavity":
+                os.chdir(os.pardir)
+
+            dir = "calculation_module/DataForFortran.dat"
+            with open(dir, "w", encoding ="utf-8") as file:
                 file.write("m" + " " * 15 + str(m) + "\n")
                 file.write("nr" + " " * 14 + str(n) + "\n")
                 file.write("L" + " " * 15 + str(support_functions.scientific_notation(support_functions, L)) + "\n")
@@ -871,7 +875,7 @@ class Ui_MainWindow(object):
 
             self.start_GyCa()
             for i in range(nMods):
-                charting_module(i, zi)
+                plot_mods(i, zi)
 
             # cs = ""
             # with open("MathExport.dat", "r") as file:
@@ -1013,11 +1017,10 @@ class Ui_MainWindow(object):
         - [startfile()](https://docs.python.org/3/library/os.html)
         """
 
-        dir = "Documentation"
-        srcdir = os.getcwd()[-(len(dir)): len(os.getcwd())]
-        if srcdir == dir:
+        srcdir = os.getcwd()[(os.getcwd().rfind("\\") + 1): len(os.getcwd())]
+        if srcdir == "Documentation":
             pass
-        elif srcdir in "GyrotronCavity":
+        elif srcdir == "Gyrotron-Cavity":
             os.chdir("./Documentation")
         else:
             os.chdir("../Documentation")
@@ -1039,6 +1042,16 @@ class Ui_MainWindow(object):
 
         [subprocess.run](https://docs.python.org/3/library/subprocess.html)
         """
-        global count
-        os.chdir("./calculation_module")
+        # Метод os.getcwd() - возвращает путь до рабочей директории.
+        srcdir = os.getcwd()[(os.getcwd().rfind("\\") + 1): len(os.getcwd())]
+        # если рабочая директория равна "calculation_module" - ничего не делает
+        if srcdir == "calculation_module":
+            pass
+        # если рабочая директория равна Gyrotron-Cavity" или "Documentation" - переходит в директорию calculation_module
+        elif srcdir == "Gyrotron-Cavity" or srcdir == "Documentation":
+            os.chdir("./calculation_module")
+        # Во всех остальных случаях
+        else:
+            os.chdir("../calculation_module")
         code = subprocess.run("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")
+        # subprocess.call("gyrocavityfdm-0.3.exe DataForFortran.dat MathExport1.dat")

@@ -1,5 +1,5 @@
 
 calculation_module/DataForFortran.dat
-calculation_module/MathExport.dat
+MathExport.dat
 /test.py
-/calculation_module/MathExport1.dat
+/MathExport1.dat

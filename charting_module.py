@@ -8,69 +8,48 @@
 ##
 ########################################################################################################################
 """
-## Модуль построения графиков распределения *модуля* комплексных амплитуд полей мод вдоль резонатора и распределения *фазы* комплексных амплитуд полей мод вдоль резонатора
+## Модуль построения графиков распределения *модуля* комплексных амплитуд полей мод вдоль резонатора и распределения
+*фазы* комплексных амплитуд полей мод вдоль резонатора.
+
+В данном файле находится один основной метод, строящая графики, и 5 вспомогательных,
+считывающие и обрабатывающие данный из файла *MathExport1.dat*
 """
 from imports import *
 
 
-class charting_module:
-    r"""
-    В данном классе находится один основной метод, строящая графики, и 5 вспомогательных,
-    считывающие и обрабатывающие данный из файла *MathExport1.dat*
-    """
+def plot_mods(k, zi):
+    '''
+    Данный метод строит график распределения k-й мод и фаз в раздельных окнах.
 
-    def __init__(self, k, zi):
+    Метод использует 3 вспомогательных метода:
+    - complex_abs()
+    - complex_arg()
+    - read_file()
 
-        '''
-        Данный метод строит график распределения k-й мод и фаз в раздельных окнах.
+    Принимает на вход:
 
-        Метод использует 3 вспомогательных метода:
-        - complex_abs()
-        - complex_arg()
-        - read_file()
+    k:
+    - порядковый номер моды
+    - тип: целое число (int)
 
-        Принимает на вход:
+    zi:
+    - значения узлов сетки
+    -тип: numpy.ndarray (массив)
+    - длина: NN
 
-        k:
-        - порядковый номер моды
-        - тип: целое число (int)
+    Переменные:
 
-        zi:
-        - значения узлов сетки
-        -тип: numpy.ndarray (массив)
-        - длина: NN
+    n: индекс числа ближайшего к нулю для нормировки
+    ([argsort](https://numpy.org/doc/stable/reference/generated/numpy.argsort.html))
+    '''
 
-        Переменные:
-
-        n: индекс числа ближайшего к нулю для нормировки
-        ([argsort](https://numpy.org/doc/stable/reference/generated/numpy.argsort.html))
-        '''
-
-        n = np.argsort(np.abs(zi))[0]
-        """Построение графиков мод"""
-        plt.figure(f"Мода %2d" % (k + 1))  # Название окна графика
-        plt.grid()  # Отображает сетку
-        plt.xlabel("z, м")  # Подпись к оси x
-        plt.ylabel("F, a.e.")  # Подпись к оси y
-        plt.plot(zi, self.complex_abs(self.read_file(k)))  # Построение графиков (plot(x, y),
-        # где x и y - массивы(списки) одинаковой длины)
-        """Построение графиков фаз"""
-        plt.figure(f"Фаза %2d" % (k + 1))  # Название окна графика
-        plt.grid()  # Отображает сетку
-        plt.xlabel("z, м")  # Подпись к оси x
-        plt.ylabel("Arg F, рад")  # Подпись к оси y
-        plt.plot(zi, self.complex_arg(self.read_file(k), n))  # Построение графиков (plot(x, y) ,
-        # где x и y - массивы(списки) одинаковой длины)
-
-        plt.show()  # Отображает окна (https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html)
-
-    def read_file(self, k):
+    def read_file(k):
         r"""
         Данный метод используется в `charting_module` для считывания данных из файла созданного вычислительным модулем.
         Он использует 2 вспомогательных модуля: `read_num_comp` и `read_num`.
         """
 
-        file = open("MathExport1.dat", "r", encoding = "utf-8")
+        file = open("MathExport1.dat", "r", encoding="utf-8")
 
         for i in range(3):
             file.readline()
@@ -78,7 +57,7 @@ class charting_module:
         R = []
         eigenvalues = []
         """Dimensionless frequencies OmegaL2divR2:"""
-        dim_freq = self.read_num_comp(file)
+        dim_freq = read_num_comp(file)
         eigenvalues.append(dim_freq)
 
         # Calculated number of eigenvalues
@@ -88,7 +67,7 @@ class charting_module:
             file.readline()
 
         """Calculated Eigenvalues:"""
-        calcul_eigenval = self.read_num_comp(file)
+        calcul_eigenval = read_num_comp(file)
         eigenvalues.append(calcul_eigenval)
 
         # Number of grid points
@@ -97,14 +76,14 @@ class charting_module:
         for i in range(3):
             file.readline()
         # Z - coordinate of grid points:
-        z = self.read_num(file)
+        z = read_num(file)
         file.readline()
 
         # Eigenvector`s
         for i in range(mods):
             file.readline()
             file.readline()
-            R.append(self.read_num_comp(file))
+            R.append(read_num_comp(file))
             file.readline()
 
         file.close()
@@ -112,7 +91,7 @@ class charting_module:
         # Возвращает решения в узлах для k-й моды
         return R[k]
 
-    def read_num_comp(self, file):
+    def read_num_comp(file):
         """
         Метод считывает комплексные числа из файла созданного вычислительным модулем на Fortran.
         """
@@ -129,7 +108,7 @@ class charting_module:
             reim.append(complex(float(b[0]), float(b[1])))
         return reim
 
-    def read_num(self, file):
+    def read_num(file):
         """
         Метод считывает числа Z - coordinate of grid points из файла созданного вычислительным модулем на Fortran.
         """
@@ -146,7 +125,7 @@ class charting_module:
             nums_z[j] = float(nums_z[j])
         return nums_z
 
-    def complex_abs(self, comp):
+    def complex_abs(comp):
         """
         Метод находит модуль комплексного числа.
 
@@ -168,7 +147,7 @@ class charting_module:
             comp[i] = np.abs(comp[i])
         return comp
 
-    def complex_arg(self, comp, n):
+    def complex_arg(comp, n):
         """
         Метод находит аргумент комплексного числа
 
@@ -192,3 +171,22 @@ class charting_module:
         for i in range(len(comp)):
             Compl.append(cmath.phase(comp[i] / comp[n]))
         return Compl
+
+    n = np.argsort(np.abs(zi))[0]
+    """Построение графиков мод"""
+    plt.figure(f"Мода %2d" % (k + 1))  # Название окна графика
+    plt.grid()  # Отображает сетку
+    plt.xlabel("z, м")  # Подпись к оси x
+    plt.ylabel("F, a.e.")  # Подпись к оси y
+    plt.plot(zi, complex_abs(read_file(k)))  # Построение графиков (plot(x, y),
+    # где x и y - массивы(списки) одинаковой длины)
+
+    """Построение графиков фаз"""
+    plt.figure(f"Фаза %2d" % (k + 1))  # Название окна графика
+    plt.grid()  # Отображает сетку
+    plt.xlabel("z, м")  # Подпись к оси x
+    plt.ylabel("Arg F, рад")  # Подпись к оси y
+    plt.plot(zi, complex_arg(read_file(k), n))  # Построение графиков (plot(x, y) ,
+    # где x и y - массивы(списки) одинаковой длины)
+
+    plt.show()  # Отображает окна (https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html)

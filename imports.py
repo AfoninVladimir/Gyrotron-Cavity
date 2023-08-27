@@ -29,5 +29,5 @@ from numpy import arange  # как range, но с шагом типа float
 from numpy import degrees  # Преобразует радианную меру угла в градусную.
 from numpy import radians  # Преобразует градусную меру угла в радианную.
 from numpy import sin, cos, tan, arcsin, arccos, arctan, sinh, cosh, tanh, arcsinh, arccosh, arctanh
-from charting_module import charting_module
+from charting_module import plot_mods
 from support_functions import *
